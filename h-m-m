@@ -1995,6 +1995,7 @@ function export_html(&$mm)
 		.'</title>'
 		.'<meta charset="UTF-8">'
 		.'<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=yes">'
+		.'<!-- https://github.com/dumptyd/treeflex -->'
 		.'<style>'
 		.'body { background-color: #222; color: #ddd; font-family: monospace; padding: 0; font-size: 16px; }'
 		.'#root {margin:10px 0}'
@@ -2009,12 +2010,13 @@ function export_html(&$mm)
 		.'#source > summary { list-style: none; }'
 		.'#source[open] { position: static; margin: 100px 0 0 0; font-size: 16px; }'
 		.'#map { margin: 40px 30px; }'
+		.'.tf-tree{font-size:16px;overflow:auto}.tf-tree *{box-sizing:border-box;margin:0;padding:0}.tf-tree ul{display:inline-flex}.tf-tree li{align-items:center;display:flex;flex-direction:column;flex-wrap:wrap;padding:0 1em;position:relative}.tf-tree li ul{margin:2em 0}.tf-tree li li:before{border-top:.0625em solid #000;content:"";display:block;height:.0625em;left:-.03125em;position:absolute;top:-1.03125em;width:100%}.tf-tree li li:first-child:before{left:calc(50% - .03125em);max-width:calc(50% + .0625em)}.tf-tree li li:last-child:before{left:auto;max-width:calc(50% + .0625em);right:calc(50% - .03125em)}.tf-tree li li:only-child:before{display:none}.tf-tree li li:only-child>.tf-nc:before,.tf-tree li li:only-child>.tf-node-content:before{height:1.0625em;top:-1.0625em}.tf-tree .tf-nc,.tf-tree .tf-node-content{border:.0625em solid #000;display:inline-block;padding:.5em 1em;position:relative}.tf-tree .tf-nc:before,.tf-tree .tf-node-content:before{top:-1.03125em}.tf-tree .tf-nc:after,.tf-tree .tf-nc:before,.tf-tree .tf-node-content:after,.tf-tree .tf-node-content:before{border-left:.0625em solid #000;content:"";display:block;height:1em;left:calc(50% - .03125em);position:absolute;width:.0625em}.tf-tree .tf-nc:after,.tf-tree .tf-node-content:after{top:calc(100% + .03125em)}.tf-tree .tf-nc:only-child:after,.tf-tree .tf-node-content:only-child:after,.tf-tree>ul>li>.tf-nc:before,.tf-tree>ul>li>.tf-node-content:before{display:none}.tf-tree.tf-gap-sm li{padding:0 .6em}.tf-tree.tf-gap-sm li>.tf-nc:before,.tf-tree.tf-gap-sm li>.tf-node-content:before{height:.6em;top:-.6em}.tf-tree.tf-gap-sm li>.tf-nc:after,.tf-tree.tf-gap-sm li>.tf-node-content:after{height:.6em}.tf-tree.tf-gap-sm li ul{margin:1.2em 0}.tf-tree.tf-gap-sm li li:before{top:-.63125em}.tf-tree.tf-gap-sm li li:only-child>.tf-nc:before,.tf-tree.tf-gap-sm li li:only-child>.tf-node-content:before{height:.6625em;top:-.6625em}.tf-tree.tf-gap-lg li{padding:0 1.5em}.tf-tree.tf-gap-lg li>.tf-nc:before,.tf-tree.tf-gap-lg li>.tf-node-content:before{height:1.5em;top:-1.5em}.tf-tree.tf-gap-lg li>.tf-nc:after,.tf-tree.tf-gap-lg li>.tf-node-content:after{height:1.5em}.tf-tree.tf-gap-lg li ul{margin:3em 0}.tf-tree.tf-gap-lg li li:before{top:-1.53125em}.tf-tree.tf-gap-lg li li:only-child>.tf-nc:before,.tf-tree.tf-gap-lg li li:only-child>.tf-node-content:before{height:1.5625em;top:-1.5625em}.tf-tree li.tf-dotted-children .tf-nc:after,.tf-tree li.tf-dotted-children .tf-nc:before,.tf-tree li.tf-dotted-children .tf-node-content:after,.tf-tree li.tf-dotted-children .tf-node-content:before{border-left-style:dotted}.tf-tree li.tf-dotted-children li:before{border-top-style:dotted}.tf-tree li.tf-dotted-children>.tf-nc:before,.tf-tree li.tf-dotted-children>.tf-node-content:before{border-left-style:solid}.tf-tree li.tf-dashed-children .tf-nc:after,.tf-tree li.tf-dashed-children .tf-nc:before,.tf-tree li.tf-dashed-children .tf-node-content:after,.tf-tree li.tf-dashed-children .tf-node-content:before{border-left-style:dashed}.tf-tree li.tf-dashed-children li:before{border-top-style:dashed}.tf-tree li.tf-dashed-children>.tf-nc:before,.tf-tree li.tf-dashed-children>.tf-node-content:before{border-left-style:solid}'
 		.'</style>'
 		.'</head>'
 		.'<body>'
-		.'<div id=map>'
+		.'<div class="tf-tree"><ul>'
 		.export_html_node($mm, $mm['root_id'])
-		.'</div>'
+		.'</ul></div>'
 		.'<details id=source>'
 		.'<summary>This is a limited, read-only version of a mind-map created in h-m-m | view source!</summary>'
 		.'<pre>'
@@ -2046,33 +2048,20 @@ function export_html_node(&$mm, $parent_id)
 	if ($mm['nodes'][$parent_id]['visible_children']==[])
 	{
 		$output =
-			"<p>"
+			"<li><span class='tf-nc'>"
 			.$mm['nodes'][$parent_id]['title']
-			."</p>";
-	}
-	elseif ($parent_id==$mm['root_id'])
-	{
-		$output =
-			"<div id=root>"
-			.$mm['nodes'][$parent_id]['title']
-			."</div>";
-
+			."</span></li>";
+	}else{
+		$children='';
 		foreach ($mm['nodes'][$parent_id]['visible_children'] as $cid)
-			$output .= export_html_node($mm, $cid);
-	}
-	else
-	{
+			$children .= export_html_node($mm, $cid);
 		$output =
-			"<details>"
-			."<summary>"
+			"<li><span class='tf-nc'>"
 			.$mm['nodes'][$parent_id]['title']
-			."</summary>";
-
-		foreach ($mm['nodes'][$parent_id]['visible_children'] as $cid)
-			$output .= export_html_node($mm, $cid);
-
-		$output .=
-			"</details>";
+			."</span><ul>"
+			.$children
+			."</ul>"
+			."</li>";
 	}
 
 	return $output;
